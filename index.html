@@ -4,108 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova AI — генератор вопросов</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app">
-        <header class="header">
+        <div class="header">
             <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-sparkles"></i>
-                </div>
+                <div class="logo-icon">✨</div>
                 <span class="logo-text">Nova AI</span>
             </div>
-            <p class="header-subtitle">Генерация вопросов для самопроверки</p>
-        </header>
+            <div class="subtitle">Генерация вопросов для самопроверки</div>
+        </div>
 
-        <div class="main-layout">
-            <!-- Левая колонка: загрузка лекции -->
-            <div class="left-column">
-                <h2 class="column-title">📚 Загрузить лекцию</h2>
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h3>Перетащи файл сюда</h3>
-                    <p class="upload-text">или <span class="upload-link">нажми для выбора</span></p>
-                    <p class="file-hint">Поддерживаются TXT, PDF, DOCX (до 10MB)</p>
-                    <input type="file" id="fileInput" accept=".txt,.pdf,.docx" style="display: none;">
-                    <button class="btn btn-outline" id="selectFileBtn">
-                        <i class="fas fa-folder-open"></i> Выбрать файл
-                    </button>
+        <div class="columns">
+            <!-- Левая колонка -->
+            <div class="left">
+                <h2>📚 Загрузить лекцию</h2>
+                <div class="upload" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <div>Перетащи файл сюда</div>
+                    <div>или <span class="link" id="selectFileBtn">нажми для выбора</span></div>
+                    <div class="hint">TXT, PDF, DOCX (до 10MB)</div>
+                    <input type="file" id="fileInput" accept=".txt,.pdf,.docx" style="display:none">
+                    <button class="btn secondary" id="selectFileBtn2">📂 Выбрать файл</button>
                 </div>
-                <div class="file-info" id="fileInfo" style="display: none;">
-                    <div class="file-info-header">
-                        <i class="fas fa-file-alt"></i>
-                        <span id="fileName"></span>
-                    </div>
-                    <div class="file-info-details">
-                        <span id="fileSize"></span>
-                        <button class="btn-icon" id="removeFileBtn"><i class="fas fa-times"></i></button>
-                    </div>
+                <div class="file-info" id="fileInfo" style="display:none">
+                    <span id="fileName"></span> (<span id="fileSize"></span>)
+                    <button id="removeFileBtn">❌</button>
                 </div>
-                <div class="or-divider"><span>или</span></div>
-                <div class="text-input-container">
-                    <textarea class="lecture-textarea" id="lectureText" placeholder="Вставьте текст лекции здесь... (минимум 500 символов)" rows="6"></textarea>
-                    <div class="textarea-footer">
-                        <span class="char-counter" id="charCounter">0 / 500 мин.</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary" id="generateBtn" disabled>
-                    <i class="fas fa-magic"></i> Сгенерировать вопросы
-                </button>
+                <div class="or">или</div>
+                <textarea id="lectureText" rows="6" placeholder="Вставьте текст лекции... (минимум 500 символов)"></textarea>
+                <div class="counter"><span id="charCounter">0</span> / 500</div>
+                <button class="btn primary" id="generateBtn" disabled>✨ Сгенерировать вопросы</button>
             </div>
 
-            <!-- Правая колонка: результат / чат -->
-            <div class="right-column">
+            <!-- Правая колонка -->
+            <div class="right">
                 <div class="tabs">
-                    <button class="tab-btn active" data-tab="questions">❓ Вопросы</button>
-                    <button class="tab-btn" data-tab="chat">💬 Чат с ИИ</button>
+                    <button class="tab active" data-tab="questions">❓ Вопросы</button>
+                    <button class="tab" data-tab="chat">💬 Чат с ИИ</button>
                 </div>
-                <div class="tab-content active" id="questionsTab">
+                <div class="tab-content active" id="questionsPanel">
                     <div class="result-header">
-                        <h3><i class="fas fa-clipboard-list"></i> Результат</h3>
-                        <div class="result-actions">
-                            <button class="btn-icon" id="copyResultBtn" title="Копировать"><i class="fas fa-copy"></i></button>
-                            <div class="download-dropdown">
-                                <button class="btn-icon" id="downloadBtn" title="Скачать"><i class="fas fa-download"></i></button>
-                                <div class="dropdown-content" id="downloadDropdown">
-                                    <button id="downloadPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                                    <button id="downloadDocxBtn"><i class="fas fa-file-word"></i> DOCX</button>
-                                    <button id="downloadTxtBtn"><i class="fas fa-file-lines"></i> TXT</button>
+                        <h3>📋 Результат</h3>
+                        <div class="actions">
+                            <button id="copyBtn" title="Копировать">📋</button>
+                            <div class="dropdown">
+                                <button id="downloadBtn">💾</button>
+                                <div class="dropdown-menu">
+                                    <button id="downloadPdf">PDF</button>
+                                    <button id="downloadDocx">DOCX</button>
+                                    <button id="downloadTxt">TXT</button>
                                 </div>
                             </div>
-                            <button class="btn-icon" id="clearResultBtn" title="Очистить"><i class="fas fa-trash"></i></button>
+                            <button id="clearBtn">🗑️</button>
                         </div>
                     </div>
-                    <div class="result-content" id="resultContent">
-                        <div class="result-placeholder">
-                            <i class="fas fa-arrow-left"></i>
-                            <p>Сгенерируйте вопросы</p>
-                        </div>
+                    <div class="result" id="resultArea">
+                        <div class="placeholder">⬅️ Сгенерируйте вопросы</div>
                     </div>
                 </div>
-                <div class="tab-content" id="chatTab">
+                <div class="tab-content" id="chatPanel">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="message assistant">
-                            <div class="message-avatar"><i class="fas fa-robot"></i></div>
-                            <div class="message-content">
-                                <div class="message-sender">Nova AI</div>
-                                <div class="message-text">Задайте вопрос</div>
+                        <div class="message bot">
+                            <div class="avatar">🤖</div>
+                            <div class="bubble">
+                                <div class="name">Nova AI</div>
+                                <div class="text">Задайте вопрос</div>
                             </div>
                         </div>
                     </div>
-                    <div class="chat-input-area">
-                        <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение...">
-                        <button class="send-btn" id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Напишите сообщение...">
+                        <button id="sendBtn">📨</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <footer class="footer">
-            <p class="small">Nova AI генерация вопрос для самопроверки by Timm</p>
-        </footer>
+        <div class="footer">Nova AI генерация вопросов для самопроверки by Timm</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
