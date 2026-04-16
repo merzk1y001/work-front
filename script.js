@@ -1,5 +1,5 @@
 // Конфигурация API (адрес бэкенда)
-const API_BASE_URL = 'http://127.0.0.1:5000';  // замените на реальный адрес
+const API_BASE_URL = 'http://127.0.0.1:5000';  // замените при необходимости
 
 // Элементы DOM
 const uploadArea = document.getElementById('uploadArea');
@@ -226,13 +226,13 @@ async function sendMessage() {
     }
 }
 
-// 5. ИСПРАВЛЕНИЕ: везде заменил "Ассистент" на "Nova AI"
 function addMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
     const sender = role === 'user' ? 'Вы' : 'Nova AI';
+    const avatarIcon = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
     msgDiv.innerHTML = `
-        <div class="message-avatar"><i class="fas fa-${role === 'user' ? 'user' : 'robot'}"></i></div>
+        <div class="message-avatar">${avatarIcon}</div>
         <div class="message-content">
             <div class="message-sender">${sender}</div>
             <div class="message-text">${text.replace(/\n/g, '<br>')}</div>
