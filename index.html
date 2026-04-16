@@ -11,11 +11,15 @@
 <body>
     <div class="app">
         <header class="header">
-            <div class="logo"><div class="logo-icon"><i class="fas fa-sparkles"></i></div><span class="logo-text">Nova AI</span></div>
+            <div class="logo">
+                <div class="logo-icon"><i class="fas fa-sparkles"></i></div>
+                <span class="logo-text">Nova AI</span>
+            </div>
             <p class="header-subtitle">Генерация вопросов для самопроверки</p>
         </header>
+
         <div class="main-layout">
-            <!-- Левая колонка: загрузка -->
+            <!-- Левая колонка: загрузка лекции -->
             <div class="left-column">
                 <h2 class="column-title">📚 Загрузить лекцию</h2>
                 <div class="upload-area" id="uploadArea">
@@ -24,20 +28,33 @@
                     <p class="upload-text">или <span class="upload-link">нажми для выбора</span></p>
                     <p class="file-hint">Поддерживаются TXT, PDF, DOCX (до 10MB)</p>
                     <input type="file" id="fileInput" accept=".txt,.pdf,.docx" style="display: none;">
-                    <button class="btn btn-outline" id="selectFileBtn"><i class="fas fa-folder-open"></i> Выбрать файл</button>
+                    <button class="btn btn-outline" id="selectFileBtn">
+                        <i class="fas fa-folder-open"></i> Выбрать файл
+                    </button>
                 </div>
                 <div class="file-info" id="fileInfo" style="display: none;">
-                    <div class="file-info-header"><i class="fas fa-file-alt"></i><span id="fileName"></span></div>
-                    <div class="file-info-details"><span id="fileSize"></span><button class="btn-icon" id="removeFileBtn"><i class="fas fa-times"></i></button></div>
+                    <div class="file-info-header">
+                        <i class="fas fa-file-alt"></i>
+                        <span id="fileName"></span>
+                    </div>
+                    <div class="file-info-details">
+                        <span id="fileSize"></span>
+                        <button class="btn-icon" id="removeFileBtn"><i class="fas fa-times"></i></button>
+                    </div>
                 </div>
                 <div class="or-divider"><span>или</span></div>
                 <div class="text-input-container">
                     <textarea class="lecture-textarea" id="lectureText" placeholder="Вставьте текст лекции здесь... (минимум 500 символов)" rows="6"></textarea>
-                    <div class="textarea-footer"><span class="char-counter" id="charCounter">0 / 500 мин.</span></div>
+                    <div class="textarea-footer">
+                        <span class="char-counter" id="charCounter">0 / 500 мин.</span>
+                    </div>
                 </div>
-                <button class="btn btn-primary" id="generateBtn" disabled><i class="fas fa-magic"></i> Сгенерировать вопросы</button>
+                <button class="btn btn-primary" id="generateBtn" disabled>
+                    <i class="fas fa-magic"></i> Сгенерировать вопросы
+                </button>
             </div>
-            <!-- Правая колонка: результат/чат -->
+
+            <!-- Правая колонка: результат / чат -->
             <div class="right-column">
                 <div class="tabs">
                     <button class="tab-btn active" data-tab="questions">❓ Вопросы</button>
@@ -59,16 +76,36 @@
                             <button class="btn-icon" id="clearResultBtn" title="Очистить"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                    <div class="result-content" id="resultContent"><div class="result-placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы</p></div></div>
+                    <div class="result-content" id="resultContent">
+                        <div class="result-placeholder">
+                            <i class="fas fa-arrow-left"></i>
+                            <p>Сгенерируйте вопросы</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-content" id="chatTab">
-                    <div class="chat-messages" id="chatMessages"><div class="message assistant"><div class="message-avatar"><i class="fas fa-robot"></i></div><div class="message-content"><div class="message-sender">Ассистент</div><div class="message-text">Задайте вопрос</div></div></div></div>
-                    <div class="chat-input-area"><input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение..."><button class="send-btn" id="sendChatBtn"><i class="fas fa-paper-plane"></i></button></div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant">
+                            <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                            <div class="message-content">
+                                <div class="message-sender">Nova AI</div>
+                                <div class="message-text">Задайте вопрос</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение...">
+                        <button class="send-btn" id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
-        <footer class="footer"><p class="small">Nova AI генерация вопрос для самопроверки by Timm</p></footer>
+
+        <footer class="footer">
+            <p class="small">Nova AI генерация вопрос для самопроверки by Timm</p>
+        </footer>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="script.js"></script>
