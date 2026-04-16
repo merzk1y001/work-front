@@ -3,32 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Nova AI — генерация вопросов</title>
-    <!-- Font Awesome 6 (свободная иконка) -->
+    <title>Nova AI — генератор вопросов</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app">
-        <!-- Шапка -->
         <div class="header">
             <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-feather-alt"></i>
-                </div>
+                <div class="logo-icon"><i class="fas fa-feather-alt"></i></div>
                 <span class="logo-text">Nova AI</span>
             </div>
             <div class="subtitle">Генерация вопросов для самопроверки</div>
         </div>
 
-        <!-- Основная сетка: две колонки -->
         <div class="columns">
-            <!-- ЛЕВАЯ КОЛОНКА – загрузка лекции -->
+            <!-- Левая колонка -->
             <div class="card">
                 <h2><i class="fas fa-book-open"></i> Загрузить лекцию</h2>
-                
                 <div class="upload-zone" id="uploadZone">
                     <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                     <div class="upload-title">Перетащите файл сюда</div>
@@ -37,33 +30,25 @@
                     <input type="file" id="fileInput" accept=".txt,.pdf,.docx" hidden>
                     <button class="btn-outline" id="selectFileBtn2"><i class="fas fa-folder-open"></i> Выбрать файл</button>
                 </div>
-
                 <div id="fileInfo" class="file-info" style="display: none;">
                     <span><i class="fas fa-file-alt"></i> <span id="fileName"></span> (<span id="fileSize"></span>)</span>
                     <button id="removeFileBtn" class="icon-btn"><i class="fas fa-times"></i></button>
                 </div>
-
                 <div class="divider">или</div>
-
                 <div class="text-field">
                     <textarea id="lectureText" rows="6" placeholder="Вставьте текст лекции здесь... (минимум 500 символов)"></textarea>
                     <div class="counter"><span id="charCount">0</span> / 500 символов</div>
                 </div>
-
-                <button class="btn-primary" id="generateBtn" disabled>
-                    <i class="fas fa-magic"></i> Сгенерировать вопросы
-                </button>
+                <button class="btn-primary" id="generateBtn" disabled><i class="fas fa-magic"></i> Сгенерировать вопросы</button>
             </div>
 
-            <!-- ПРАВАЯ КОЛОНКА – результат / чат -->
-            <div class="card">
+            <!-- Правая колонка -->
+            <div class="card" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="tabs">
                     <button class="tab active" data-tab="questions"><i class="fas fa-clipboard-list"></i> Вопросы</button>
                     <button class="tab" data-tab="chat"><i class="fas fa-comment-dots"></i> Чат с ИИ</button>
                 </div>
-
-                <!-- Панель Вопросы -->
-                <div class="tab-pane active" id="questionsPane">
+                <div class="tab-pane active" id="questionsPane" style="flex: 1; display: flex; flex-direction: column;">
                     <div class="result-header">
                         <h3><i class="fas fa-clipboard-list"></i> Результат</h3>
                         <div class="action-buttons">
@@ -79,17 +64,12 @@
                             <button id="clearResultBtn" class="icon-btn" title="Очистить"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
-                    <div class="result-content" id="resultContent">
-                        <div class="placeholder">
-                            <i class="fas fa-arrow-left"></i>
-                            <p>Сгенерируйте вопросы – они появятся здесь</p>
-                        </div>
+                    <div class="result-content" id="resultContent" style="flex: 1;">
+                        <div class="placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы – они появятся здесь</p></div>
                     </div>
                 </div>
-
-                <!-- Панель Чат -->
-                <div class="tab-pane" id="chatPane">
-                    <div class="chat-messages" id="chatMessages">
+                <div class="tab-pane" id="chatPane" style="flex: 1; display: none; flex-direction: column;">
+                    <div class="chat-messages" id="chatMessages" style="flex: 1;">
                         <div class="message bot">
                             <div class="avatar"><i class="fas fa-robot"></i></div>
                             <div class="bubble">
@@ -99,7 +79,7 @@
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chatInput" placeholder="Напишите сообщение..." autocomplete="off">
+                        <input type="text" id="chatInput" placeholder="Напишите сообщение...">
                         <button id="sendChatBtn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
@@ -111,7 +91,6 @@
         </footer>
     </div>
 
-    <!-- Библиотеки -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.min.js"></script>
