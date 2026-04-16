@@ -70,7 +70,7 @@ body {
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 24px;
+    font-size: 28px;
 }
 
 .logo-text {
@@ -107,7 +107,7 @@ body {
     gap: 8px;
 }
 
-/* ===== ОБЛАСТЬ ЗАГРУЗКИ ФАЙЛА ===== */
+/* Upload area */
 .upload-area {
     background: var(--bg-color);
     border: 2px dashed var(--border);
@@ -154,7 +154,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* КНОПКИ */
+/* Buttons */
 .btn {
     padding: 12px 24px;
     border: none;
@@ -168,9 +168,8 @@ body {
     gap: 8px;
 }
 
-/* 1. ИСПРАВЛЕНИЕ: кнопка "Выбрать файл" — текст всегда виден */
 .btn-outline {
-    background: #f3f4f6;        /* чуть темнее, чем белый фон */
+    background: #f3f4f6;
     border: 1px solid var(--border);
     color: var(--text-color);
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -180,7 +179,6 @@ body {
     border-color: var(--accent);
     color: white;
 }
-/* для тёмной темы */
 @media (prefers-color-scheme: dark) {
     .btn-outline {
         background: #374151;
@@ -195,7 +193,7 @@ body {
     padding: 14px;
     font-size: 16px;
     margin-top: 24px;
-    justify-content: center;   /* 3. ИСПРАВЛЕНИЕ: центрируем текст */
+    justify-content: center;
 }
 .btn-primary:hover:not(:disabled) {
     background: var(--accent-hover);
@@ -207,7 +205,6 @@ body {
     cursor: not-allowed;
 }
 
-/* ИНФОРМАЦИЯ О ФАЙЛЕ */
 .file-info {
     background: var(--bg-color);
     border-radius: 12px;
@@ -279,7 +276,7 @@ body {
     font-size: 14px;
 }
 
-/* 2. ИСПРАВЛЕНИЕ: текстовое поле лекции — улучшен контраст */
+/* Textarea */
 .lecture-textarea {
     width: 100%;
     padding: 16px;
@@ -290,8 +287,8 @@ body {
     resize: vertical;
     outline: none;
     transition: all 0.3s ease;
-    background: rgba(255,255,255,0.9); /* светлый фон в светлой теме */
-    color: #1a1f36;                    /* тёмный текст */
+    background: rgba(255,255,255,0.9);
+    color: #1a1f36;
 }
 @media (prefers-color-scheme: dark) {
     .lecture-textarea {
@@ -317,7 +314,7 @@ body {
     color: var(--success);
 }
 
-/* 4. ИСПРАВЛЕНИЕ: вкладки — у неактивной есть граница и фон */
+/* Tabs */
 .tabs {
     display: flex;
     gap: 12px;
@@ -328,12 +325,12 @@ body {
 .tab-btn {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    padding: 8px 16px;
+    padding: 8px 20px;
     font-size: 16px;
     font-weight: 500;
     color: var(--text-secondary);
     cursor: pointer;
-    border-radius: 30px;
+    border-radius: 40px;
     transition: all 0.2s ease;
 }
 .tab-btn.active {
@@ -346,6 +343,7 @@ body {
     border-color: var(--accent);
     color: var(--accent);
 }
+
 .tab-content {
     display: none;
     height: 100%;
@@ -355,7 +353,7 @@ body {
     display: flex;
 }
 
-/* РЕЗУЛЬТАТ */
+/* Result */
 .result-header {
     display: flex;
     justify-content: space-between;
@@ -441,7 +439,7 @@ body {
     padding: 8px;
 }
 
-/* ЧАТ */
+/* Chat */
 #chatTab {
     height: 100%;
     display: none;
@@ -451,33 +449,50 @@ body {
     display: flex;
 }
 .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 8px;
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 16px;
     margin-bottom: 16px;
     max-height: 350px;
+    overflow-y: auto;
 }
 .message {
     display: flex;
     gap: 12px;
     margin-bottom: 16px;
 }
-.message.assistant .message-avatar {
-    background: var(--message-bot);
-    color: var(--accent);
+.message.user {
+    flex-direction: row-reverse;
+}
+.message.user .message-content {
+    text-align: right;
 }
 .message.user .message-avatar {
-    background: var(--accent);
-    color: white;
+    margin-left: 12px;
+    margin-right: 0;
+}
+.message.assistant .message-avatar {
+    margin-right: 12px;
 }
 .message-avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 20px;
+    background: var(--bg-secondary);
+}
+.message.user .message-avatar {
+    background: var(--accent);
+    color: white;
+}
+.message.assistant .message-avatar {
+    background: var(--message-bot);
+    color: var(--accent);
 }
 .message-content {
     max-width: 80%;
@@ -504,8 +519,6 @@ body {
     color: white;
     border-bottom-right-radius: 4px;
 }
-
-/* 5. ИСПРАВЛЕНИЕ: поле ввода чата — теперь хорошо видно */
 .chat-input-area {
     display: flex;
     gap: 10px;
@@ -543,12 +556,15 @@ body {
     align-items: center;
     justify-content: center;
 }
+.send-btn i {
+    font-size: 18px;
+}
 .send-btn:hover {
     background: var(--accent-hover);
     transform: scale(1.05);
 }
 
-/* ЗАГРУЗКА */
+/* Loading */
 .loading {
     text-align: center;
     margin-top: 32px;
@@ -582,7 +598,7 @@ body {
     opacity: 0.7;
 }
 
-/* СКРОЛЛ */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -598,7 +614,7 @@ body {
     background: var(--text-secondary);
 }
 
-/* АДАПТАЦИЯ */
+/* Responsive */
 @media (max-width: 768px) {
     .main-layout {
         grid-template-columns: 1fr;
