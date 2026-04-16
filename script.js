@@ -1,108 +1,99 @@
-// Конфигурация API (адрес бэкенда)
-const API_BASE_URL = 'http://127.0.0.1:5000';  // замените при необходимости
+const API_BASE_URL = 'http://127.0.0.1:5000';
 
-// Элементы DOM
+// DOM
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const selectFileBtn = document.getElementById('selectFileBtn');
+const selectFileBtn2 = document.getElementById('selectFileBtn2');
 const fileInfo = document.getElementById('fileInfo');
 const fileName = document.getElementById('fileName');
-const fileSize = document.getElementById('fileSize');
+const fileSizeSpan = document.getElementById('fileSize');
 const removeFileBtn = document.getElementById('removeFileBtn');
 const lectureText = document.getElementById('lectureText');
 const charCounter = document.getElementById('charCounter');
 const generateBtn = document.getElementById('generateBtn');
-const resultContent = document.getElementById('resultContent');
-const copyResultBtn = document.getElementById('copyResultBtn');
-const clearResultBtn = document.getElementById('clearResultBtn');
-const downloadPdfBtn = document.getElementById('downloadPdfBtn');
-const downloadDocxBtn = document.getElementById('downloadDocxBtn');
-const downloadTxtBtn = document.getElementById('downloadTxtBtn');
-
-// Элементы чата
+const resultArea = document.getElementById('resultArea');
+const copyBtn = document.getElementById('copyBtn');
+const clearBtn = document.getElementById('clearBtn');
+const downloadPdf = document.getElementById('downloadPdf');
+const downloadDocx = document.getElementById('downloadDocx');
+const downloadTxt = document.getElementById('downloadTxt');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
-const sendChatBtn = document.getElementById('sendChatBtn');
-const tabBtns = document.querySelectorAll('.tab-btn');
-const questionsTab = document.getElementById('questionsTab');
-const chatTab = document.getElementById('chatTab');
+const sendBtn = document.getElementById('sendBtn');
+const tabs = document.querySelectorAll('.tab');
+const questionsPanel = document.getElementById('questionsPanel');
+const chatPanel = document.getElementById('chatPanel');
 
 let currentFile = null;
-let lastResultText = '';
+let lastResult = '';
 
 // Переключение вкладок
-tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if (btn.dataset.tab === 'questions') {
-            questionsTab.classList.add('active');
-            chatTab.classList.remove('active');
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        if (tab.dataset.tab === 'questions') {
+            questionsPanel.classList.add('active');
+            chatPanel.classList.remove('active');
         } else {
-            chatTab.classList.add('active');
-            questionsTab.classList.remove('active');
+            chatPanel.classList.add('active');
+            questionsPanel.classList.remove('active');
         }
     });
 });
 
-// ========== ЗАГРУЗКА ФАЙЛОВ ==========
-uploadArea.addEventListener('click', () => fileInput.click());
+// Загрузка файлов
+function handleFileDrop(e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#d1d5db';
+    const file = e.dataTransfer.files[0];
+    if (file) processFile(file);
+}
 uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    uploadArea.classList.add('dragover');
+    uploadArea.style.borderColor = '#6366f1';
 });
 uploadArea.addEventListener('dragleave', () => {
-    uploadArea.classList.remove('dragover');
+    uploadArea.style.borderColor = '#d1d5db';
 });
-uploadArea.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    handleFile(e.dataTransfer.files[0]);
-});
-
-selectFileBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    fileInput.click();
-});
-
+uploadArea.addEventListener('drop', handleFileDrop);
+uploadArea.addEventListener('click', () => fileInput.click());
+selectFileBtn.addEventListener('click', () => fileInput.click());
+selectFileBtn2.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', (e) => {
-    handleFile(e.target.files[0]);
+    if (e.target.files[0]) processFile(e.target.files[0]);
 });
 
-async function handleFile(file) {
-    if (!file) return;
-    currentFile = file;
+async function processFile(file) {
     if (file.size > 10 * 1024 * 1024) {
-        alert('Файл слишком большой. Максимальный размер 10MB');
+        alert('Файл слишком большой');
         return;
     }
+    currentFile = file;
     fileName.textContent = file.name;
-    fileSize.textContent = formatFileSize(file.size);
+    fileSizeSpan.textContent = formatSize(file.size);
     fileInfo.style.display = 'flex';
-
     const formData = new FormData();
     formData.append('file', file);
     try {
-        const response = await fetch(`${API_BASE_URL}/upload`, {
-            method: 'POST',
-            body: formData
-        });
-        const data = await response.json();
+        const res = await fetch(`${API_BASE_URL}/upload`, { method: 'POST', body: formData });
+        const data = await res.json();
         if (data.text) {
             lectureText.value = data.text;
-            updateCharCounter();
+            updateCounter();
         } else {
-            alert('Ошибка при чтении файла: ' + (data.error || 'неизвестная ошибка'));
+            alert('Ошибка чтения файла');
         }
-    } catch (err) {
+    } catch {
         alert('Ошибка соединения с сервером');
     }
 }
 
-function formatFileSize(bytes) {
+function formatSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/(1024*1024)).toFixed(1) + ' MB';
 }
 
 removeFileBtn.addEventListener('click', () => {
@@ -111,155 +102,128 @@ removeFileBtn.addEventListener('click', () => {
     fileInput.value = '';
 });
 
-// ========== ТЕКСТОВОЕ ПОЛЕ ==========
-function updateCharCounter() {
-    const length = lectureText.value.length;
-    charCounter.textContent = `${length} / 500 мин.`;
-    generateBtn.disabled = length < 500;
+function updateCounter() {
+    const len = lectureText.value.length;
+    charCounter.textContent = len;
+    generateBtn.disabled = len < 500;
 }
-lectureText.addEventListener('input', updateCharCounter);
+lectureText.addEventListener('input', updateCounter);
 
-// ========== ГЕНЕРАЦИЯ ВОПРОСОВ ==========
+// Генерация
 generateBtn.addEventListener('click', async () => {
     const text = lectureText.value.trim();
-    if (text.length < 500) {
-        alert('Текст слишком короткий. Нужно минимум 500 символов');
-        return;
-    }
-
+    if (text.length < 500) return alert('Текст слишком короткий');
     generateBtn.disabled = true;
-    resultContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Генерация...</p></div>';
-
+    resultArea.innerHTML = '<div style="text-align:center">Генерация...</div>';
     try {
-        const response = await fetch(`${API_BASE_URL}/generate`, {
+        const res = await fetch(`${API_BASE_URL}/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text })
         });
-        const data = await response.json();
+        const data = await res.json();
         if (data.result) {
-            lastResultText = data.result;
-            displayResult(lastResultText);
+            lastResult = data.result;
+            resultArea.innerHTML = `<div style="white-space:pre-wrap">${data.result.replace(/\n/g, '<br>')}</div>`;
         } else {
-            resultContent.innerHTML = `<p class="error">Ошибка: ${data.error}</p>`;
+            resultArea.innerHTML = `<div class="error">Ошибка: ${data.error}</div>`;
         }
-    } catch (err) {
-        resultContent.innerHTML = `<p class="error">Ошибка соединения с сервером</p>`;
+    } catch {
+        resultArea.innerHTML = '<div class="error">Ошибка соединения</div>';
     } finally {
         generateBtn.disabled = false;
     }
 });
 
-function displayResult(text) {
-    resultContent.innerHTML = `<div class="result-text">${text.replace(/\n/g, '<br>')}</div>`;
-}
-
-// ========== КОПИРОВАНИЕ И ОЧИСТКА ==========
-copyResultBtn.addEventListener('click', () => {
-    if (!lastResultText) return alert('Нет результата');
-    navigator.clipboard.writeText(lastResultText).then(() => alert('Скопировано'));
+// Копирование, очистка, скачивание
+copyBtn.addEventListener('click', () => {
+    if (lastResult) {
+        navigator.clipboard.writeText(lastResult);
+        alert('Скопировано');
+    }
 });
-
-clearResultBtn.addEventListener('click', () => {
-    lastResultText = '';
-    resultContent.innerHTML = `<div class="result-placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы</p></div>`;
+clearBtn.addEventListener('click', () => {
+    lastResult = '';
+    resultArea.innerHTML = '<div class="placeholder">⬅️ Сгенерируйте вопросы</div>';
 });
-
-// ========== СКАЧИВАНИЕ ==========
-downloadTxtBtn.addEventListener('click', () => {
-    if (!lastResultText) return alert('Нет результата');
-    const blob = new Blob([lastResultText], { type: 'text/plain' });
-    saveAs(blob, 'questions.txt');
+downloadTxt.addEventListener('click', () => {
+    if (lastResult) saveAs(new Blob([lastResult], {type: 'text/plain'}), 'questions.txt');
 });
-
-downloadPdfBtn.addEventListener('click', () => {
-    if (!lastResultText) return alert('Нет результата');
+downloadPdf.addEventListener('click', () => {
+    if (!lastResult) return;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const lines = doc.splitTextToSize(lastResultText, 180);
-    doc.text(lines, 15, 15);
+    doc.text(doc.splitTextToSize(lastResult, 180), 15, 15);
     doc.save('questions.pdf');
 });
-
-downloadDocxBtn.addEventListener('click', () => {
-    if (!lastResultText) return alert('Нет результата');
+downloadDocx.addEventListener('click', () => {
+    if (!lastResult) return;
     const { Document, Packer, Paragraph, TextRun } = window.docx;
-    const doc = new Document({
-        sections: [{
-            children: [new Paragraph({ children: [new TextRun(lastResultText)] })]
-        }]
-    });
+    const doc = new Document({ sections: [{ children: [new Paragraph({ children: [new TextRun(lastResult)] })] }] });
     Packer.toBlob(doc).then(blob => saveAs(blob, 'questions.docx'));
 });
 
-// ========== ЧАТ ==========
-sendChatBtn.addEventListener('click', sendMessage);
+// Чат
+sendBtn.addEventListener('click', sendMessage);
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
 });
 
 async function sendMessage() {
-    const message = chatInput.value.trim();
-    if (!message) return;
-
-    addMessage('user', message);
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    addMessage('user', msg);
     chatInput.value = '';
-
-    const typingId = showTypingIndicator();
-
+    const typingId = showTyping();
     try {
-        const response = await fetch(`${API_BASE_URL}/chat`, {
+        const res = await fetch(`${API_BASE_URL}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
+            body: JSON.stringify({ message: msg })
         });
-        const data = await response.json();
-        removeTypingIndicator(typingId);
-        if (data.result) {
-            addMessage('assistant', data.result);
-        } else {
-            addMessage('assistant', 'Ошибка: ' + (data.error || 'неизвестная ошибка'));
-        }
-    } catch (err) {
-        removeTypingIndicator(typingId);
-        addMessage('assistant', 'Ошибка соединения с сервером');
+        const data = await res.json();
+        removeTyping(typingId);
+        if (data.result) addMessage('bot', data.result);
+        else addMessage('bot', 'Ошибка: ' + (data.error || 'неизвестно'));
+    } catch {
+        removeTyping(typingId);
+        addMessage('bot', 'Ошибка соединения');
     }
 }
 
 function addMessage(role, text) {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${role}`;
-    const sender = role === 'user' ? 'Вы' : 'Nova AI';
-    const avatarIcon = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
-    msgDiv.innerHTML = `
-        <div class="message-avatar">${avatarIcon}</div>
-        <div class="message-content">
-            <div class="message-sender">${sender}</div>
-            <div class="message-text">${text.replace(/\n/g, '<br>')}</div>
+    const div = document.createElement('div');
+    div.className = `message ${role === 'user' ? 'user' : 'bot'}`;
+    const avatar = role === 'user' ? '👤' : '🤖';
+    const name = role === 'user' ? 'Вы' : 'Nova AI';
+    div.innerHTML = `
+        <div class="avatar">${avatar}</div>
+        <div class="bubble">
+            <div class="name">${name}</div>
+            <div class="text">${text.replace(/\n/g, '<br>')}</div>
         </div>
     `;
-    chatMessages.appendChild(msgDiv);
+    chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function showTypingIndicator() {
+function showTyping() {
     const id = 'typing-' + Date.now();
     const div = document.createElement('div');
-    div.className = 'message assistant typing-indicator';
+    div.className = 'message bot';
     div.id = id;
     div.innerHTML = `
-        <div class="message-avatar"><i class="fas fa-robot"></i></div>
-        <div class="message-content">
-            <div class="message-sender">Nova AI</div>
-            <div class="message-text"><i>печатает...</i></div>
+        <div class="avatar">🤖</div>
+        <div class="bubble">
+            <div class="name">Nova AI</div>
+            <div class="text"><i>печатает...</i></div>
         </div>
     `;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return id;
 }
-
-function removeTypingIndicator(id) {
+function removeTyping(id) {
     const el = document.getElementById(id);
     if (el) el.remove();
 }
