@@ -1,6 +1,6 @@
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
-// DOM
+// DOM elements
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const selectFileBtn = document.getElementById('selectFileBtn');
@@ -12,68 +12,75 @@ const removeFileBtn = document.getElementById('removeFileBtn');
 const lectureText = document.getElementById('lectureText');
 const charCounter = document.getElementById('charCounter');
 const generateBtn = document.getElementById('generateBtn');
-const resultArea = document.getElementById('resultArea');
-const copyBtn = document.getElementById('copyBtn');
-const clearBtn = document.getElementById('clearBtn');
-const downloadPdf = document.getElementById('downloadPdf');
-const downloadDocx = document.getElementById('downloadDocx');
-const downloadTxt = document.getElementById('downloadTxt');
+const resultContent = document.getElementById('resultContent');
+const copyResultBtn = document.getElementById('copyResultBtn');
+const clearResultBtn = document.getElementById('clearResultBtn');
+const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+const downloadDocxBtn = document.getElementById('downloadDocxBtn');
+const downloadTxtBtn = document.getElementById('downloadTxtBtn');
 const chatMessages = document.getElementById('chatMessages');
 const chatInput = document.getElementById('chatInput');
-const sendBtn = document.getElementById('sendBtn');
-const tabs = document.querySelectorAll('.tab');
-const questionsPanel = document.getElementById('questionsPanel');
-const chatPanel = document.getElementById('chatPanel');
+const sendChatBtn = document.getElementById('sendChatBtn');
+const tabBtns = document.querySelectorAll('.tab-btn');
+const questionsTab = document.getElementById('questionsTab');
+const chatTab = document.getElementById('chatTab');
 
 let currentFile = null;
-let lastResult = '';
+let lastResultText = '';
 
-// Переключение вкладок
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        if (tab.dataset.tab === 'questions') {
-            questionsPanel.classList.add('active');
-            chatPanel.classList.remove('active');
+// Tab switching
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if (tab === 'questions') {
+            questionsTab.classList.add('active');
+            chatTab.classList.remove('active');
         } else {
-            chatPanel.classList.add('active');
-            questionsPanel.classList.remove('active');
+            chatTab.classList.add('active');
+            questionsTab.classList.remove('active');
         }
     });
 });
 
-// Загрузка файлов
-function handleFileDrop(e) {
-    e.preventDefault();
-    uploadArea.style.borderColor = '#d1d5db';
-    const file = e.dataTransfer.files[0];
-    if (file) processFile(file);
-}
+// File upload handlers
+uploadArea.addEventListener('click', () => fileInput.click());
 uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    uploadArea.style.borderColor = '#6366f1';
+    uploadArea.classList.add('dragover');
 });
 uploadArea.addEventListener('dragleave', () => {
-    uploadArea.style.borderColor = '#d1d5db';
+    uploadArea.classList.remove('dragover');
 });
-uploadArea.addEventListener('drop', handleFileDrop);
-uploadArea.addEventListener('click', () => fileInput.click());
-selectFileBtn.addEventListener('click', () => fileInput.click());
-selectFileBtn2.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files[0]) processFile(e.target.files[0]);
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
 });
 
-async function processFile(file) {
+selectFileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.click();
+});
+selectFileBtn2.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fileInput.click();
+});
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) handleFile(e.target.files[0]);
+});
+
+async function handleFile(file) {
     if (file.size > 10 * 1024 * 1024) {
-        alert('Файл слишком большой');
+        alert('Файл слишком большой. Максимум 10 MB');
         return;
     }
     currentFile = file;
     fileName.textContent = file.name;
-    fileSizeSpan.textContent = formatSize(file.size);
+    fileSizeSpan.textContent = formatFileSize(file.size);
     fileInfo.style.display = 'flex';
+
     const formData = new FormData();
     formData.append('file', file);
     try {
@@ -81,19 +88,19 @@ async function processFile(file) {
         const data = await res.json();
         if (data.text) {
             lectureText.value = data.text;
-            updateCounter();
+            updateCharCounter();
         } else {
-            alert('Ошибка чтения файла');
+            alert('Ошибка чтения файла: ' + (data.error || 'неизвестная ошибка'));
         }
-    } catch {
+    } catch (err) {
         alert('Ошибка соединения с сервером');
     }
 }
 
-function formatSize(bytes) {
+function formatFileSize(bytes) {
     if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
-    return (bytes/(1024*1024)).toFixed(1) + ' MB';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
 }
 
 removeFileBtn.addEventListener('click', () => {
@@ -102,128 +109,152 @@ removeFileBtn.addEventListener('click', () => {
     fileInput.value = '';
 });
 
-function updateCounter() {
+function updateCharCounter() {
     const len = lectureText.value.length;
-    charCounter.textContent = len;
+    charCounter.textContent = `${len} / 500 мин.`;
+    if (len >= 500) charCounter.classList.add('valid');
+    else charCounter.classList.remove('valid');
     generateBtn.disabled = len < 500;
 }
-lectureText.addEventListener('input', updateCounter);
+lectureText.addEventListener('input', updateCharCounter);
 
-// Генерация
+// Generate questions
 generateBtn.addEventListener('click', async () => {
-    const text = lectureText.value.trim();
-    if (text.length < 500) return alert('Текст слишком короткий');
+    let text = lectureText.value.trim();
+    if (text.length < 500) {
+        alert('Минимум 500 символов');
+        return;
+    }
     generateBtn.disabled = true;
-    resultArea.innerHTML = '<div style="text-align:center">Генерация...</div>';
+    resultContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Генерация...</p></div>';
+
     try {
-        const res = await fetch(`${API_BASE_URL}/generate`, {
+        const response = await fetch(`${API_BASE_URL}/generate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text })
         });
-        const data = await res.json();
+        const data = await response.json();
         if (data.result) {
-            lastResult = data.result;
-            resultArea.innerHTML = `<div style="white-space:pre-wrap">${data.result.replace(/\n/g, '<br>')}</div>`;
+            lastResultText = data.result;
+            displayResult(lastResultText);
         } else {
-            resultArea.innerHTML = `<div class="error">Ошибка: ${data.error}</div>`;
+            resultContent.innerHTML = `<div style="color:#ef4444">Ошибка: ${data.error}</div>`;
         }
-    } catch {
-        resultArea.innerHTML = '<div class="error">Ошибка соединения</div>';
+    } catch (err) {
+        resultContent.innerHTML = '<div style="color:#ef4444">Ошибка соединения с сервером</div>';
     } finally {
         generateBtn.disabled = false;
     }
 });
 
-// Копирование, очистка, скачивание
-copyBtn.addEventListener('click', () => {
-    if (lastResult) {
-        navigator.clipboard.writeText(lastResult);
+function displayResult(text) {
+    resultContent.innerHTML = `<div class="result-text">${text.replace(/\n/g, '<br>')}</div>`;
+}
+
+copyResultBtn.addEventListener('click', () => {
+    if (lastResultText) {
+        navigator.clipboard.writeText(lastResultText);
         alert('Скопировано');
     }
 });
-clearBtn.addEventListener('click', () => {
-    lastResult = '';
-    resultArea.innerHTML = '<div class="placeholder">⬅️ Сгенерируйте вопросы</div>';
+clearResultBtn.addEventListener('click', () => {
+    lastResultText = '';
+    resultContent.innerHTML = `<div class="result-placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы — они появятся здесь</p></div>`;
 });
-downloadTxt.addEventListener('click', () => {
-    if (lastResult) saveAs(new Blob([lastResult], {type: 'text/plain'}), 'questions.txt');
+
+downloadTxtBtn.addEventListener('click', () => {
+    if (!lastResultText) return alert('Нет результата');
+    const blob = new Blob([lastResultText], { type: 'text/plain' });
+    saveAs(blob, 'questions.txt');
 });
-downloadPdf.addEventListener('click', () => {
-    if (!lastResult) return;
+downloadPdfBtn.addEventListener('click', () => {
+    if (!lastResultText) return alert('Нет результата');
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.text(doc.splitTextToSize(lastResult, 180), 15, 15);
+    const lines = doc.splitTextToSize(lastResultText, 180);
+    doc.text(lines, 15, 15);
     doc.save('questions.pdf');
 });
-downloadDocx.addEventListener('click', () => {
-    if (!lastResult) return;
+downloadDocxBtn.addEventListener('click', () => {
+    if (!lastResultText) return alert('Нет результата');
     const { Document, Packer, Paragraph, TextRun } = window.docx;
-    const doc = new Document({ sections: [{ children: [new Paragraph({ children: [new TextRun(lastResult)] })] }] });
+    const doc = new Document({
+        sections: [{
+            children: [new Paragraph({ children: [new TextRun(lastResultText)] })]
+        }]
+    });
     Packer.toBlob(doc).then(blob => saveAs(blob, 'questions.docx'));
 });
 
-// Чат
-sendBtn.addEventListener('click', sendMessage);
+// Chat
+sendChatBtn.addEventListener('click', sendMessage);
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
 });
 
 async function sendMessage() {
-    const msg = chatInput.value.trim();
-    if (!msg) return;
-    addMessage('user', msg);
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    addMessage('user', message);
     chatInput.value = '';
-    const typingId = showTyping();
+
+    const typingId = showTypingIndicator();
+
     try {
-        const res = await fetch(`${API_BASE_URL}/chat`, {
+        const response = await fetch(`${API_BASE_URL}/chat`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg })
+            body: JSON.stringify({ message })
         });
-        const data = await res.json();
-        removeTyping(typingId);
-        if (data.result) addMessage('bot', data.result);
-        else addMessage('bot', 'Ошибка: ' + (data.error || 'неизвестно'));
-    } catch {
-        removeTyping(typingId);
-        addMessage('bot', 'Ошибка соединения');
+        const data = await response.json();
+        removeTypingIndicator(typingId);
+        if (data.result) {
+            addMessage('assistant', data.result);
+        } else {
+            addMessage('assistant', 'Ошибка: ' + (data.error || 'неизвестно'));
+        }
+    } catch (err) {
+        removeTypingIndicator(typingId);
+        addMessage('assistant', 'Ошибка соединения с сервером');
     }
 }
 
 function addMessage(role, text) {
-    const div = document.createElement('div');
-    div.className = `message ${role === 'user' ? 'user' : 'bot'}`;
-    const avatar = role === 'user' ? '👤' : '🤖';
-    const name = role === 'user' ? 'Вы' : 'Nova AI';
-    div.innerHTML = `
-        <div class="avatar">${avatar}</div>
-        <div class="bubble">
-            <div class="name">${name}</div>
-            <div class="text">${text.replace(/\n/g, '<br>')}</div>
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${role === 'user' ? 'user' : 'assistant'}`;
+    const avatarIcon = role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+    const senderName = role === 'user' ? 'Вы' : 'Nova AI';
+    msgDiv.innerHTML = `
+        <div class="message-avatar">${avatarIcon}</div>
+        <div class="message-content">
+            <div class="message-sender">${senderName}</div>
+            <div class="message-text">${text.replace(/\n/g, '<br>')}</div>
         </div>
     `;
-    chatMessages.appendChild(div);
+    chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function showTyping() {
+function showTypingIndicator() {
     const id = 'typing-' + Date.now();
     const div = document.createElement('div');
-    div.className = 'message bot';
+    div.className = 'message assistant';
     div.id = id;
     div.innerHTML = `
-        <div class="avatar">🤖</div>
-        <div class="bubble">
-            <div class="name">Nova AI</div>
-            <div class="text"><i>печатает...</i></div>
+        <div class="message-avatar"><i class="fas fa-robot"></i></div>
+        <div class="message-content">
+            <div class="message-sender">Nova AI</div>
+            <div class="message-text"><i>печатает...</i></div>
         </div>
     `;
     chatMessages.appendChild(div);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return id;
 }
-function removeTyping(id) {
+
+function removeTypingIndicator(id) {
     const el = document.getElementById(id);
     if (el) el.remove();
 }
