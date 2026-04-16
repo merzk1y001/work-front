@@ -1,7 +1,7 @@
 // Конфигурация API (адрес бэкенда)
-const API_BASE_URL = 'http://127.0.0.1:5000';  // замените на реальный адрес после деплоя
+const API_BASE_URL = 'http://127.0.0.1:5000';  // замените на реальный адрес
 
-// Элементы
+// Элементы DOM
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const selectFileBtn = document.getElementById('selectFileBtn');
@@ -45,7 +45,7 @@ tabBtns.forEach(btn => {
     });
 });
 
-// Загрузка файлов (аналогично предыдущей версии, но теперь отправляем файл на сервер)
+// ========== ЗАГРУЗКА ФАЙЛОВ ==========
 uploadArea.addEventListener('click', () => fileInput.click());
 uploadArea.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -80,7 +80,6 @@ async function handleFile(file) {
     fileSize.textContent = formatFileSize(file.size);
     fileInfo.style.display = 'flex';
 
-    // Загружаем файл на сервер для извлечения текста
     const formData = new FormData();
     formData.append('file', file);
     try {
@@ -112,6 +111,7 @@ removeFileBtn.addEventListener('click', () => {
     fileInput.value = '';
 });
 
+// ========== ТЕКСТОВОЕ ПОЛЕ ==========
 function updateCharCounter() {
     const length = lectureText.value.length;
     charCounter.textContent = `${length} / 500 мин.`;
@@ -119,7 +119,7 @@ function updateCharCounter() {
 }
 lectureText.addEventListener('input', updateCharCounter);
 
-// Генерация вопросов
+// ========== ГЕНЕРАЦИЯ ВОПРОСОВ ==========
 generateBtn.addEventListener('click', async () => {
     const text = lectureText.value.trim();
     if (text.length < 500) {
@@ -127,7 +127,6 @@ generateBtn.addEventListener('click', async () => {
         return;
     }
 
-    // Показываем загрузку
     generateBtn.disabled = true;
     resultContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Генерация...</p></div>';
 
@@ -155,19 +154,18 @@ function displayResult(text) {
     resultContent.innerHTML = `<div class="result-text">${text.replace(/\n/g, '<br>')}</div>`;
 }
 
-// Копирование
+// ========== КОПИРОВАНИЕ И ОЧИСТКА ==========
 copyResultBtn.addEventListener('click', () => {
     if (!lastResultText) return alert('Нет результата');
     navigator.clipboard.writeText(lastResultText).then(() => alert('Скопировано'));
 });
 
-// Очистка
 clearResultBtn.addEventListener('click', () => {
     lastResultText = '';
-    resultContent.innerHTML = `<div class="result-placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы — они появятся здесь</p></div>`;
+    resultContent.innerHTML = `<div class="result-placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы</p></div>`;
 });
 
-// Скачивание (аналогично предыдущей версии, но с lastResultText)
+// ========== СКАЧИВАНИЕ ==========
 downloadTxtBtn.addEventListener('click', () => {
     if (!lastResultText) return alert('Нет результата');
     const blob = new Blob([lastResultText], { type: 'text/plain' });
@@ -185,7 +183,6 @@ downloadPdfBtn.addEventListener('click', () => {
 
 downloadDocxBtn.addEventListener('click', () => {
     if (!lastResultText) return alert('Нет результата');
-    // Используем docx (упрощённо)
     const { Document, Packer, Paragraph, TextRun } = window.docx;
     const doc = new Document({
         sections: [{
@@ -195,7 +192,7 @@ downloadDocxBtn.addEventListener('click', () => {
     Packer.toBlob(doc).then(blob => saveAs(blob, 'questions.docx'));
 });
 
-// Чат
+// ========== ЧАТ ==========
 sendChatBtn.addEventListener('click', sendMessage);
 chatInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') sendMessage();
@@ -205,11 +202,9 @@ async function sendMessage() {
     const message = chatInput.value.trim();
     if (!message) return;
 
-    // Добавляем сообщение пользователя
     addMessage('user', message);
     chatInput.value = '';
 
-    // Индикатор печати
     const typingId = showTypingIndicator();
 
     try {
@@ -231,13 +226,15 @@ async function sendMessage() {
     }
 }
 
+// 5. ИСПРАВЛЕНИЕ: везде заменил "Ассистент" на "Nova AI"
 function addMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
+    const sender = role === 'user' ? 'Вы' : 'Nova AI';
     msgDiv.innerHTML = `
         <div class="message-avatar"><i class="fas fa-${role === 'user' ? 'user' : 'robot'}"></i></div>
         <div class="message-content">
-            <div class="message-sender">${role === 'user' ? 'Вы' : 'Ассистент'}</div>
+            <div class="message-sender">${sender}</div>
             <div class="message-text">${text.replace(/\n/g, '<br>')}</div>
         </div>
     `;
@@ -253,7 +250,7 @@ function showTypingIndicator() {
     div.innerHTML = `
         <div class="message-avatar"><i class="fas fa-robot"></i></div>
         <div class="message-content">
-            <div class="message-sender">Ассистент</div>
+            <div class="message-sender">Nova AI</div>
             <div class="message-text"><i>печатает...</i></div>
         </div>
     `;
