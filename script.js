@@ -23,33 +23,35 @@ const chatInput = document.getElementById('chatInput');
 const sendChatBtn = document.getElementById('sendChatBtn');
 const tabs = document.querySelectorAll('.tab');
 const panes = document.querySelectorAll('.tab-pane');
-
-// Кнопки темы
-const lightThemeBtn = document.getElementById('lightThemeBtn');
-const darkThemeBtn = document.getElementById('darkThemeBtn');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
 
 let currentFile = null;
 let lastResultText = '';
 
-// === ТЕМА ===
+// === ТЕМА (одна кнопка) ===
 function setTheme(theme) {
     if (theme === 'dark') {
         document.body.classList.add('dark');
         localStorage.setItem('nova-theme', 'dark');
+        if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
     } else {
         document.body.classList.remove('dark');
         localStorage.setItem('nova-theme', 'light');
+        if (themeToggleBtn) themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
     }
+}
+function toggleTheme() {
+    const isDark = document.body.classList.contains('dark');
+    setTheme(isDark ? 'light' : 'dark');
 }
 // Загружаем сохранённую тему
 const savedTheme = localStorage.getItem('nova-theme');
 if (savedTheme === 'dark') {
     setTheme('dark');
 } else {
-    setTheme('light'); // по умолчанию светлая
+    setTheme('light');
 }
-lightThemeBtn?.addEventListener('click', () => setTheme('light'));
-darkThemeBtn?.addEventListener('click', () => setTheme('dark'));
+themeToggleBtn?.addEventListener('click', toggleTheme);
 
 // Переключение вкладок
 tabs.forEach(tab => {
@@ -186,7 +188,7 @@ clearResultBtn?.addEventListener('click', () => {
     resultContentDiv.innerHTML = `<div class="placeholder"><i class="fas fa-arrow-left"></i><p>Сгенерируйте вопросы – они появятся здесь</p></div>`;
 });
 
-// Скачивание
+// Скачивание (три отдельные кнопки)
 downloadTxtBtn?.addEventListener('click', () => {
     if (!lastResultText) return alert('Нет результата');
     const blob = new Blob([lastResultText], { type: 'text/plain' });
