@@ -24,8 +24,32 @@ const sendChatBtn = document.getElementById('sendChatBtn');
 const tabs = document.querySelectorAll('.tab');
 const panes = document.querySelectorAll('.tab-pane');
 
+// Кнопки темы
+const lightThemeBtn = document.getElementById('lightThemeBtn');
+const darkThemeBtn = document.getElementById('darkThemeBtn');
+
 let currentFile = null;
 let lastResultText = '';
+
+// === ТЕМА ===
+function setTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('dark');
+        localStorage.setItem('nova-theme', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        localStorage.setItem('nova-theme', 'light');
+    }
+}
+// Загружаем сохранённую тему
+const savedTheme = localStorage.getItem('nova-theme');
+if (savedTheme === 'dark') {
+    setTheme('dark');
+} else {
+    setTheme('light'); // по умолчанию светлая
+}
+lightThemeBtn?.addEventListener('click', () => setTheme('light'));
+darkThemeBtn?.addEventListener('click', () => setTheme('dark'));
 
 // Переключение вкладок
 tabs.forEach(tab => {
@@ -50,11 +74,11 @@ if (uploadZone) {
         uploadZone.style.borderColor = '#4f46e5';
     });
     uploadZone.addEventListener('dragleave', () => {
-        uploadZone.style.borderColor = '#cbd5e1';
+        uploadZone.style.borderColor = 'var(--border-strong)';
     });
     uploadZone.addEventListener('drop', async (e) => {
         e.preventDefault();
-        uploadZone.style.borderColor = '#cbd5e1';
+        uploadZone.style.borderColor = 'var(--border-strong)';
         const file = e.dataTransfer.files[0];
         if (file) await processFile(file);
     });
