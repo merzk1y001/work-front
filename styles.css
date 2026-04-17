@@ -1,4 +1,4 @@
-/* Базовые переменные (светлая тема по умолчанию) */
+/* Базовые переменные (светлая тема) */
 :root {
     --bg-body: #f7f9fc;
     --bg-card: #ffffff;
@@ -15,6 +15,7 @@
     --message-user: #eef2ff;
 }
 
+/* Тёмная тема */
 body.dark {
     --bg-body: #0f172a;
     --bg-card: #1e293b;
@@ -55,18 +56,16 @@ body {
     min-height: calc(100vh - 4rem);
 }
 
-/* HEADER с кнопками тем */
+/* HEADER */
 .header {
     text-align: center;
     margin-bottom: 2rem;
     position: relative;
 }
-.theme-buttons {
+.theme-toggle {
     position: absolute;
     top: 0;
     right: 0;
-    display: flex;
-    gap: 8px;
 }
 .theme-btn {
     background: var(--bg-card);
@@ -141,7 +140,6 @@ body {
     flex-direction: column;
 }
 
-/* Заголовки */
 h2 {
     font-size: 1.5rem;
     font-weight: 600;
@@ -155,7 +153,6 @@ h2 i {
     color: var(--accent);
 }
 
-/* Зона загрузки */
 .upload-zone {
     background: var(--bg-upload);
     border: 2px dashed var(--border-strong);
@@ -302,7 +299,6 @@ h2 i {
     cursor: not-allowed;
 }
 
-/* Вкладки */
 .tabs {
     display: flex;
     gap: 12px;
@@ -341,7 +337,6 @@ h2 i {
     display: flex;
 }
 
-/* Результат */
 .result-header {
     display: flex;
     justify-content: space-between;
@@ -357,45 +352,7 @@ h2 i {
 }
 .action-buttons {
     display: flex;
-    gap: 6px;
-}
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 40px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-strong);
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-    min-width: 120px;
-    z-index: 100;
-    overflow: hidden;
-}
-/* Исправление: меню остаётся открытым при наведении на него */
-.dropdown:hover .dropdown-menu,
-.dropdown-menu:hover {
-    display: block;
-}
-.dropdown-menu button {
-    width: 100%;
-    padding: 10px 14px;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
     gap: 8px;
-    font-size: 0.85rem;
-    color: var(--text-primary);
-}
-.dropdown-menu button:hover {
-    background: var(--bg-hover);
 }
 .result-content {
     background: var(--bg-card);
@@ -423,7 +380,6 @@ h2 i {
     white-space: pre-wrap;
 }
 
-/* Чат */
 .chat-messages {
     background: var(--bg-card);
     border: 1px solid var(--border-light);
@@ -530,7 +486,6 @@ h2 i {
     padding-top: 1.5rem;
 }
 
-/* Адаптив */
 @media (max-width: 900px) {
     body {
         padding: 1rem;
@@ -547,9 +502,9 @@ h2 i {
     .logo-text {
         font-size: 28px;
     }
-    .theme-buttons {
+    .theme-toggle {
         position: static;
-        justify-content: flex-end;
         margin-bottom: 1rem;
+        text-align: right;
     }
 }
