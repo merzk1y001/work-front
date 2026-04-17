@@ -11,6 +11,10 @@
 <body>
     <div class="app">
         <div class="header">
+            <div class="theme-buttons">
+                <button id="lightThemeBtn" class="theme-btn" title="Светлая тема"><i class="fas fa-sun"></i></button>
+                <button id="darkThemeBtn" class="theme-btn" title="Тёмная тема"><i class="fas fa-moon"></i></button>
+            </div>
             <div class="logo">
                 <div class="logo-icon"><i class="fas fa-feather-alt"></i></div>
                 <span class="logo-text">Nova AI</span>
@@ -57,7 +61,7 @@
                             <button id="copyResultBtn" class="icon-btn" title="Копировать"><i class="fas fa-copy"></i></button>
                             <div class="dropdown">
                                 <button id="downloadBtn" class="icon-btn" title="Скачать"><i class="fas fa-download"></i></button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu" id="downloadMenu">
                                     <button id="downloadPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
                                     <button id="downloadDocxBtn"><i class="fas fa-file-word"></i> DOCX</button>
                                     <button id="downloadTxtBtn"><i class="fas fa-file-alt"></i> TXT</button>
