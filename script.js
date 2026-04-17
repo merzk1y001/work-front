@@ -40,27 +40,31 @@ tabs.forEach(tab => {
 
 // Загрузка файла
 function triggerFileInput() { fileInput.click(); }
-selectFileBtn?.addEventListener('click', triggerFileInput);
-selectFileBtn2?.addEventListener('click', triggerFileInput);
-uploadZone?.addEventListener('click', triggerFileInput);
+if (selectFileBtn) selectFileBtn.addEventListener('click', triggerFileInput);
+if (selectFileBtn2) selectFileBtn2.addEventListener('click', triggerFileInput);
+if (uploadZone) uploadZone.addEventListener('click', triggerFileInput);
 
-uploadZone?.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    uploadZone.style.borderColor = '#4f46e5';
-});
-uploadZone?.addEventListener('dragleave', () => {
-    uploadZone.style.borderColor = '#cbd5e1';
-});
-uploadZone?.addEventListener('drop', async (e) => {
-    e.preventDefault();
-    uploadZone.style.borderColor = '#cbd5e1';
-    const file = e.dataTransfer.files[0];
-    if (file) await processFile(file);
-});
+if (uploadZone) {
+    uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#4f46e5';
+    });
+    uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.borderColor = '#cbd5e1';
+    });
+    uploadZone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#cbd5e1';
+        const file = e.dataTransfer.files[0];
+        if (file) await processFile(file);
+    });
+}
 
-fileInput?.addEventListener('change', async (e) => {
-    if (e.target.files[0]) await processFile(e.target.files[0]);
-});
+if (fileInput) {
+    fileInput.addEventListener('change', async (e) => {
+        if (e.target.files[0]) await processFile(e.target.files[0]);
+    });
+}
 
 async function processFile(file) {
     if (file.size > 10 * 1024 * 1024) {
@@ -93,11 +97,13 @@ function formatBytes(bytes) {
     return (bytes/(1024*1024)).toFixed(1) + ' MB';
 }
 
-removeFileBtn?.addEventListener('click', () => {
-    currentFile = null;
-    fileInfoDiv.style.display = 'none';
-    fileInput.value = '';
-});
+if (removeFileBtn) {
+    removeFileBtn.addEventListener('click', () => {
+        currentFile = null;
+        fileInfoDiv.style.display = 'none';
+        fileInput.value = '';
+    });
+}
 
 function updateCharCounter() {
     const len = lectureText.value.length;
@@ -248,5 +254,4 @@ function removeTyping(id) {
     if (el) el.remove();
 }
 
-// Инициализация
 updateCharCounter();
