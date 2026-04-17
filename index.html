@@ -11,9 +11,8 @@
 <body>
     <div class="app">
         <div class="header">
-            <div class="theme-buttons">
-                <button id="lightThemeBtn" class="theme-btn" title="Светлая тема"><i class="fas fa-sun"></i></button>
-                <button id="darkThemeBtn" class="theme-btn" title="Тёмная тема"><i class="fas fa-moon"></i></button>
+            <div class="theme-toggle">
+                <button id="themeToggleBtn" class="theme-btn" title="Сменить тему"><i class="fas fa-moon"></i></button>
             </div>
             <div class="logo">
                 <div class="logo-icon"><i class="fas fa-feather-alt"></i></div>
@@ -59,14 +58,10 @@
                         <h3><i class="fas fa-clipboard-list"></i> Результат</h3>
                         <div class="action-buttons">
                             <button id="copyResultBtn" class="icon-btn" title="Копировать"><i class="fas fa-copy"></i></button>
-                            <div class="dropdown">
-                                <button id="downloadBtn" class="icon-btn" title="Скачать"><i class="fas fa-download"></i></button>
-                                <div class="dropdown-menu" id="downloadMenu">
-                                    <button id="downloadPdfBtn"><i class="fas fa-file-pdf"></i> PDF</button>
-                                    <button id="downloadDocxBtn"><i class="fas fa-file-word"></i> DOCX</button>
-                                    <button id="downloadTxtBtn"><i class="fas fa-file-alt"></i> TXT</button>
-                                </div>
-                            </div>
+                            <!-- Три отдельные кнопки вместо выпадающего меню -->
+                            <button id="downloadPdfBtn" class="icon-btn" title="Скачать PDF"><i class="fas fa-file-pdf"></i></button>
+                            <button id="downloadDocxBtn" class="icon-btn" title="Скачать DOCX"><i class="fas fa-file-word"></i></button>
+                            <button id="downloadTxtBtn" class="icon-btn" title="Скачать TXT"><i class="fas fa-file-alt"></i></button>
                             <button id="clearResultBtn" class="icon-btn" title="Очистить"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
